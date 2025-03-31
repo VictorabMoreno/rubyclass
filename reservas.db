@@ -1,0 +1,43 @@
+# app/services/reserva_service.rb
+require_relative "../../db/config"
+
+class ReservaService
+  def self.criar(dados)
+    DB.execute("INSERT INTO reservas (nome, horario, pessoas) VALUES (?, ?, ?)", [
+      dados["nome"],
+      dados["horario"],
+      dados["pessoas"]
+    ])
+    id = DB.last_insert_row_id
+    { id: id, **dados }
+  end
+
+  def self.listar
+    DB.execute("SELECT * FROM reservas")
+  end
+end
+
+# app/routes/api.rb
+require "json"
+require_relative "../services/reserva_service"
+
+class API
+  def call(env)
+    req = Rack::Request.new(env)
+
+    case [req.request_method, req.path_info]
+    when ['GET', '/reservas']
+      reservas = ReservaService.listar
+      [200, { "Content-Type" => "application/json" }, [reservas.to_json]]
+
+    when ['POST', '/reservas']
+      body = JSON.parse(req.body.read)
+      reserva = ReservaService.criar(body)
+      [201, { "Content-Type" => "application/json" }, [reserva.to_json]]
+
+    else
+      [404, { "Content-Type" => "application/json" }, [{ erro: "Rota não encontrada" }.to_json]]
+    end
+  end
+end
+
