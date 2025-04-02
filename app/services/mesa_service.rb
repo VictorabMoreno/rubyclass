@@ -1,11 +1,12 @@
-require_relative '../banco_fake'
+require_relative '../../db/config'
+require_relative '../database'
 
 class MesaService
   def self.listar
-    BancoFake.listar_mesas
+    Banco.listar_mesas
   end
 
   def self.disponiveis(quantidade)
-    BancoFake.mesas_disponiveis(quantidade)
+    Banco.mesas_disponiveis(quantidade)
   end
 end

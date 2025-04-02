@@ -36,4 +36,8 @@ class BancoFake
     def self.mesas_disponiveis(quantidade)
       @@mesas.select { |m| m[:capacidade] >= quantidade }
     end
+
+    def self.BancoFake
+      
+    end
   end
